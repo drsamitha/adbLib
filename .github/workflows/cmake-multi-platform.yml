@@ -1,0 +1,97 @@
+# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
+# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
+name: CMake on multiple platforms
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    types:
+      - closed
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      fail-fast: false
+
+      # Set up a matrix to run the following 3 configurations:
+      # 1. <Windows, Release, latest MSVC compiler toolchain on the default runner image, default generator>
+      # 2. <Linux, Release, latest GCC compiler toolchain on the default runner image, default generator>
+      # 3. <Linux, Release, latest Clang compiler toolchain on the default runner image, default generator>
+      #
+      # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
+
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        arch: [x64, x86]
+        include:
+          - os: windows-latest
+            arch: x64
+            c_compiler: cl
+            cpp_compiler: cl
+          - os: windows-latest
+            arch: x86
+            c_compiler: cl
+            cpp_compiler: cl
+          - os: ubuntu-latest
+            arch: x64
+            c_compiler: gcc
+            cpp_compiler: g++
+          - os: ubuntu-latest
+            arch: x86
+            c_compiler: gcc
+            cpp_compiler: g++
+          - os: ubuntu-latest
+            arch: x64
+            c_compiler: clang
+            cpp_compiler: clang++
+          - os: ubuntu-latest
+            arch: x86
+            c_compiler: clang
+            cpp_compiler: clang++
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set reusable strings
+      id: strings
+      run: echo "build-output-dir=${{ github.workspace }}/build" >> $GITHUB_ENV
+
+    - name: Setup CMake
+      uses: lukka/get-cmake@v3
+
+    - name: Install dependencies on Linux
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++-multilib gcc-multilib
+        sudo apt-get install -y libboost-all-dev
+
+    - name: Install dependencies on Windows
+      if: matrix.os == 'windows-latest'
+      run: |
+        choco install -y visualstudio2019buildtools boost-msvc-14.1
+
+    - name: Configure and Build
+      run: |
+        cmake -S . -B ${{ env.build-output-dir }}/ \
+          -DCMAKE_BUILD_TYPE=Release \
+          -G ${{ if eq(matrix.os, 'windows-latest') }} "Visual Studio 16 2019" ${{ else }} "Ninja" ${{ endif }} \
+          ${{ if eq(matrix.arch, 'x86') }} -A Win32 ${{ endif }} \
+          ${{ if eq(matrix.arch, 'x86') && matrix.os == 'ubuntu-latest' }} -DCMAKE_TOOLCHAIN_FILE=toolchain-x86.cmake ${{ endif }}
+
+    - name: Build
+      run: cmake --build ${{ env.build-output-dir }}/${{ matrix.os }}_${{ matrix.arch }} --config Release
+
+    - name: Run tests
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        ./${{ env.build-output-dir }}/${{ matrix.os }}_${{ matrix.arch }}/bin/exampleUse
+        
+      else if: matrix.os == 'windows-latest'
+      run: |
+        .\${{ env.build-output-dir }}\${{ matrix.os }}_${{ matrix.arch }}\Release\exampleUse.exe
