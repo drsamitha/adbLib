@@ -45,5 +45,42 @@ CMakeUserPresets.json
 # dir
 bin
 build
+docs
+workflows
 source
 lib/Source
+
+# Ignore the vcpkg directory
+/vcpkg/
+
+# Ignore build artifacts
+/build/
+
+# Ignore CMake cache and build files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Ignore IDE-specific files (optional)
+.vscode/
+.idea/
+
+# Ignore log files and other temporary files
+*.log
+*.tmp
+*.bak
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore installed dependencies (if any)
+installed/
+vcpkg_installed
+downloads/
+packages/
+
+# Include vcpkg configuration files to be tracked by Git
+!vcpkg.json
+!vcpkg-configuration.json

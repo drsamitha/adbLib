@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8) 
+cmake_minimum_required(VERSION 3.16) 
 
 project(adbLib) 
 
@@ -18,6 +18,9 @@ message(STATUS ">>>>>>>>  OS : ${CMAKE_HOST_SYSTEM_NAME}_${OSBitness}  <<<<<<<<"
 
 set(CMAKE_BUILD_RPATH "$ORIGIN/lib") #dynamic lib search for binary in lib dir
 
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
+endif()
 
 # Set the output directory for product
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin/${CMAKE_SYSTEM_NAME}_${OSBitness})
@@ -26,6 +29,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin/${CMAKE_SYSTEM_NAM
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/lib)
 
+include_directories(${Boost_INCLUDE_DIRS})
 
 include_directories( ${CMAKE_SOURCE_DIR}/include)
 
@@ -38,14 +42,14 @@ file(GLOB INCD_SRC ${CMAKE_SOURCE_DIR}/include/*.hpp)
 
 
 # Find Boost libraries
-find_package(Boost REQUIRED COMPONENTS system thread)
+find_package(Boost REQUIRED COMPONENTS system thread asio)
 
 
 add_library(${PROJECT_NAME} SHARED ${LIB_SRC} ${INCD_SRC})
 
 
 # Link Boost libraries
-target_link_libraries( ${PROJECT_NAME} INTERFACE ${Boost_LIBRARIES})
+target_link_libraries( ${PROJECT_NAME} PRIVATE Boost::system Boost::thread Boost::asio)
 
 
 #####################################################################

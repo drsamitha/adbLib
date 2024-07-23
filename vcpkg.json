@@ -1,0 +1,9 @@
+{
+    "name": "boost",
+    "version": "0.1.0",
+    "dependencies": [
+        "boost-system",
+        "boost-thread",
+        "boost-asio"
+    ]
+}
