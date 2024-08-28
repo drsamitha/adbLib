@@ -25,13 +25,14 @@ namespace ADB{
      * ADB::connect(overwriteDefault);
      * ```
      */
-typedef struct ConnectionData{
-    std::string IPv4 ;
-    int port ;
-    int timeout ;
-}*pCD;
+struct ConnectionData {
+    std::string IPv4;
+    int port;
+    int timeout;
+ 
+};
 
-ConnectionData Default = { .IPv4 = "127.0.0.1" , .port = 5037 , .timeout = 5 };
+const ConnectionData Default { "127.0.0.1", 5037, 5 };
 
 
 

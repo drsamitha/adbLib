@@ -3,7 +3,7 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 
-#include <stdexcept>
+ 
 
 
 using boost::asio::ip::tcp;

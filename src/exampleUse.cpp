@@ -8,7 +8,7 @@
  */
 
 #include "adbLib.hpp"
-
+#include <stdexcept>
 /**
  * @brief Main function of the example program.
  *
@@ -22,13 +22,13 @@ int main() {
 	try {
 		/**
 		 * @code 
-		 * ADB::ConnectionData dt = { .IPv4 = "127.0.0.1" , .port = 5555 , .timeout = 5 };
+		 * ADB::ConnectionData dt = {  "127.0.0.1" ,  5555 ,   5 };
 		 * @endcode
 		 * @brief Connection data for the ADB connection.
 		 *
 		 * This structure holds the IP address, port, and timeout for the ADB connection.
 		 */
-		ADB::ConnectionData dt = { .IPv4 = "127.0.0.1" , .port = 5555 , .timeout = 5 };
+		ADB::ConnectionData dt = {  "127.0.0.1" ,  5555 ,  5 };
 
 		/**
 		 * @code 

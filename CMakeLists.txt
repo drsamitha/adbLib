@@ -37,6 +37,9 @@ file(GLOB LIB_SRC ${CMAKE_SOURCE_DIR}/lib/*.cpp)
 
 file(GLOB INCD_SRC ${CMAKE_SOURCE_DIR}/include/*.hpp)
 
+if(MSVC)
+	set_property(TARGET ${PROJECT_NAME} PROPERTY WINDOWS_EXPORT_ALL_SYMBOLS ON )
+endif()
 #####################################################################
 ##############   adbLib build   #################################
 
